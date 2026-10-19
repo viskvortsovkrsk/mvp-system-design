@@ -16,7 +16,7 @@ Env file: `docs/env/stage.md` ([03](03-folders.md#environment-files)).
 
 ## Flow
 
-1. CI build on `main` → auto `deploy.sh stage <version>` ([08](08-release.md)).
+1. CI build on the integration branch ([08](08-release.md#git)) → auto `deploy.sh stage <version>` ([08](08-release.md)).
 2. Smoke, integration with real providers, UI + e2e ([12](12-tests.md)); soak ≥ 1 h or one scheduled-job cycle.
 3. Promote the same digests to prod.
 

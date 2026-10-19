@@ -39,7 +39,7 @@ Model: Claude Opus 5.5 or GPT-6.1 Sol, effort medium or higher.
 | [05 dev](docs/05-dev.md) | local stack, fakes, tests |
 | [06 stage](docs/06-stage.md) | pre-prod rehearsal |
 | [07 prod](docs/07-prod.md) | topology, Swarm, Redis, buckets, secrets, backups |
-| [08 release](docs/08-release.md) | CI, deploy, rollback, pins |
+| [08 release](docs/08-release.md) | git flow, CI, deploy, rollback, pins |
 | [09 cloud](docs/09-cloud.md) | provider-agnostic rules, buy list, Terraform |
 | [10 alerts](docs/10-alerts.md) | rules, routing, dashboards |
 | [11 tasks](docs/11-tasks.md) | tracker, task format, sync |

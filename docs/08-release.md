@@ -2,11 +2,22 @@
 
 ## Version
 
-`version.txt` = `MAJOR.MINOR`. CI makes `MAJOR.MINOR.<build>` on `main`, `…-<branch>` elsewhere. Image tag = version, OCI label = git SHA. Git tag on `main`.
+`version.txt` = `MAJOR.MINOR`. CI makes `MAJOR.MINOR.<build>` on the integration branch ([Git](#git)), `…-<branch>` elsewhere. Image tag = version, OCI label = git SHA. Git tag on `main`.
 
 ## Git
 
-Trunk `main`. Short branches → PR → green CI → approval → merge → delete branch. Commit message says what changed (never `-` or `fix`).
+Git is mandatory from the first line of code. Host: GitHub (default) or Bitbucket ([02](02-stack.md)).
+
+| Phase | Flow | Integration branch |
+|---|---|---|
+| Start, until stage and prod run | `<branch>` → PR → `main` | `main` |
+| Stage and prod running | `<branch>` → PR → `develop` → release PR → `main` | `develop` |
+
+- `main` is locked from day 1, `develop` from when it exists: no direct commits by anyone, owner included; changes only by PR with green CI; no force-push, no deletion. A ruleset on the host, no bypass.
+- CI builds, scans and deploys stage from the integration branch ([CI](#ci-jenkinsfile)).
+- Release PR `develop` → `main`: on merge, `main` is tagged and prod gets the digests stage tested for that `develop` commit. Never rebuilt.
+- Hotfix: branch from `main` → PR → `main` (built, stage, prod) → merge `main` back into `develop`.
+- Short branches, deleted after merge. Commit message says what changed (never `-` or `fix`).
 
 - Author ≠ approver: a PR is approved by a person who did not write it; an agent's PR by a person. Enforced by `main` protection ([15](15-security.md#people-and-accounts)), never waived by admins.
 - One person on the project: deviation in `docs/00-mvp-system-design.md` ([agent rules](../agent-rules.md#1-follow-mvp-system-design)) with the compensating control (the owner reviews each release's diff after deploy, noted in `docs/releases/<ver>.md`). Before a SOC 2 window, a second approver.
@@ -16,7 +27,7 @@ Trunk `main`. Short branches → PR → green CI → approval → merge → dele
 1. Triggers, timeout, concurrency lock — in code.
 2. Lint: `go vet`, `govulncheck`, `shellcheck`, `hadolint`, stack render with dummy env, duplicate migration numbers, `gitleaks`.
 3. Test ([12](12-tests.md)): unit → integration with fakes.
-4. SonarQube on `main` ([13](13-code-quality.md)): scan with step 3's coverage; a red gate fails the build.
+4. SonarQube on the integration branch ([13](13-code-quality.md)): scan with step 3's coverage; a red gate fails the build.
 5. Build once (BuildKit, prod platform) → Trivy (HIGH/CRITICAL with a fix fails) → push → record digests.
 6. UI + e2e on those images, with fakes ([12](12-tests.md)).
 7. Git tag.

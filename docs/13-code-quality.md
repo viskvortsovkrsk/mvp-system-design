@@ -1,6 +1,6 @@
 # 13 · Code quality
 
-SonarQube Community Build checks `main`. Agents follow its findings.
+SonarQube Community Build checks the integration branch ([08](08-release.md#git)), called `main` below. Agents follow its findings.
 
 ## Server
 
