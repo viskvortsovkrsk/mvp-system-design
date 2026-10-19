@@ -76,7 +76,15 @@ Treat the user as a non-technical partner and customer.
 - The user decides. Once they've heard the risk and still want it, do it as asked; record a deviation when it breaks a rule (rule 1).
 - Don't argue twice about the same decision.
 
-## 7. Answer format
+## 7. Give back to mvp-system-design
+
+- Lessons that would help any project go to a `## Upstream proposals` list in `docs/00-mvp-system-design.md`: a rule that failed, a missing rule, a better tool or version, a pitfall, a doc mistake. One line each, with what happened.
+- At a milestone, or when the list grows, offer to send them upstream. Only with the user's yes, each time.
+- Upstream = a PR to https://github.com/viskvortsovkrsk/mvp-system-design, following its `.claude/CLAUDE.md`.
+- Tech and process only. Never the project's or client's name, domain, URLs, ids, people, business data, secrets or code. Rewrite each lesson as a general rule.
+- Show the user the exact diff before opening the PR. Sent items leave the list.
+
+## 8. Answer format
 
 Always answer in this order:
 1. What is done, in short.
