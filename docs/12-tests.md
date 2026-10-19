@@ -44,3 +44,23 @@ stage('Integration') {
 
 - UI + e2e stages: the same without `recordCoverage`.
 - `options { buildDiscarder(logRotator(daysToKeepStr: '400', artifactDaysToKeepStr: '30')) }`: reports and videos stay 30 days; build records (result, JUnit, approver) 400 days, the change evidence ([04](04-logs.md#retention)).
+
+## Release report
+
+One page per project with every release on it: the call on top, the evidence under it.
+
+| Part | Shows | From |
+|---|---|---|
+| Call | ship, keep or hold, one line why; then ranked next steps, each with its card ([11](11-tasks.md)) | written from the parts below |
+| Tiers | per tier: tests, passed, failed, skipped, time, coverage against the gate, where it ran (build or local) | `reports/<tier>/*-junit.xml`, `coverage.txt` |
+| Coverage | per package and tier, against 99% | `coverage.out`, blocks merged across test binaries |
+| Tests | every test: tier, package or spec, device, status, time, link to its video | JUnit |
+| Videos | every UI test and the walkthrough | `reports/e2e/**/video.webm` |
+| Load | per path: requests, failed, p50, p90, p99, max | `reports/load/` |
+| Lint, SonarQube | pass or fail per build; the gate's failed conditions, measures, open issues | the build; `reports/sonar/` ([13](13-code-quality.md#scan)) |
+
+- A version picker; the newest release opens. Every row carries `release`: a new release appends rows, the page doesn't change.
+- Every figure comes from those reports, the call's text included; none is typed into the page.
+- `scripts/report <version>` builds a release's rows from the build's archived `reports/`. Run it when the release reaches prod: Jenkins keeps reports 30 days ([Jenkins](#jenkins)).
+- Videos as H.264 MP4 with a poster: phones play them. A release tested only locally kept video for failures only: record its UI tier again on its own image with `PW_VIDEO=on`. Each test row links to its own recording; a report page that can't play video links into a video page with the same picker.
+- Shared with the team only.

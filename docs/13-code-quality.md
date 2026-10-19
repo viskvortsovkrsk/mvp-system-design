@@ -25,6 +25,7 @@ sonar.qualitygate.wait=true
 - `sonar.coverage.exclusions`: the real provider clients; their coverage is gated on stage ([12](12-tests.md)).
 - Jenkins, after the tests, `main` only: pinned `sonarsource/sonar-scanner-cli`, project token from the secret manager, `-Dsonar.projectVersion=$(cat version.txt)`. A red gate fails the build.
 - `projectVersion` is `MAJOR.MINOR`, never the build number: each new version restarts new code, so a failed gate's issues would pass as old code.
+- The same stage then saves the gate's conditions, the project's measures and its open issues to `reports/sonar/*.json` through the API, with the same token, red gate or not, and archives them. The release report reads them ([12](12-tests.md#release-report)); no agent needs the token.
 
 ## Agents
 

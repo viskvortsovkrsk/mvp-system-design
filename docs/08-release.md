@@ -69,4 +69,5 @@ CI agent runs on its own VM in the private network (local option: [07](07-prod.m
 ## Paper trail
 
 - `docs/releases/<ver>.md`: changes, migrations (additive? locking?), steps, rollback, verification result.
+- Test results and the call on the release: the release report ([12](12-tests.md#release-report)).
 - `docs/incidents/YYYY-MM-DD-slug.md`: timeline, impact, how detected, root cause, fixes, the alert that would have caught it.
