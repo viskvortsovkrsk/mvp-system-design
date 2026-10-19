@@ -10,6 +10,18 @@ Rules, not code: what to build, with what, in which order. Each choice favours:
 
 Security, privacy, rate limits, observability, backups and release are in from day one, not added after launch.
 
+## How to use it: with an AI agent
+
+Model: Claude Opus 5.5 or GPT-6.1 Sol, effort medium or higher.
+
+1. Paste into the agent in your project:
+
+   ```text
+   Add the mvp-system-design skill from https://github.com/viskvortsovkrsk/mvp-system-design (skills/mvp-system-design), then build this project like mvp-system-design.
+   ```
+
+2. Copy [agent-rules.md](agent-rules.md) into the project's `CLAUDE.md` (Claude) or `AGENTS.md` (other agents): how every session thinks, keeps it simple, changes only what's asked and verifies.
+
 ## What's inside
 
 | Doc | Covers |
@@ -33,69 +45,13 @@ Security, privacy, rate limits, observability, backups and release are in from d
 
 Environments: `dev` · `stage` · `prod` (the `ENVIRONMENT` value, file names, hostnames).
 
-## How to use it
-
-1. Read this README, then `docs/` in order.
-2. Build phase by phase ([Build order](#build-order)). Tech outside [02](docs/02-stack.md) is a deliberate decision, recorded as a deviation.
-3. Record the commit you follow and every deviation in your project ([Adopting](#adopting)).
-
-### With an AI agent
-
-Model: Claude Opus 5.5 or GPT-6.1 Sol, effort medium or higher.
-
-1. Paste into the agent in your project:
-
-   ```text
-   Add the mvp-system-design skill from https://github.com/viskvortsovkrsk/mvp-system-design (skills/mvp-system-design), then build this project like mvp-system-design.
-   ```
-
-2. Copy [agent-rules.md](agent-rules.md) into the project's `CLAUDE.md` (Claude) or `AGENTS.md` (other agents): how every session thinks, keeps it simple, changes only what's asked and verifies.
-
-### Build order
+## Build order
 
 | Phase | Do |
 |---|---|
 | Day 1 | 01 rules · 02 · 03 · 04 · 05 · 11 · 12 · 13 · 14 · 15 through vendors · 16 · 08 CI through build |
 | Before the first prod user | 01 web security, webhooks · 06 · 07 start here · 08 deploy · 09 · 10 · 15 launch, incident · one restore drill |
 | Grown | 07 grown |
-
-### What only you can do
-
-Accounts, money, legal: the agent can't. Personal account and 2FA (hardware key for owners) everywhere; credentials into the secret manager or `~/.config/<project>/`, their places into `docs/env/<env>.md` ([03](docs/03-folders.md#environment-files)).
-
-| Phase | Do | Doc |
-|---|---|---|
-| Day 1 | AI agent subscription: Claude or GPT, model per [With an AI agent](#with-an-ai-agent) | — |
-| Day 1 | GitHub: org, repo, `main` protected, secret scanning on | [15](docs/15-security.md#people-and-accounts) |
-| Day 1 | Tracker: Jira project, API token for the agent | [11](docs/11-tasks.md) |
-| Day 1 | Claude Design canvas for the look | [14](docs/14-ui.md) |
-| Day 1 | Buy the domain; DNS to Cloudflare | [02](docs/02-stack.md) |
-| Before the first prod user | Cloud: stage and prod accounts, billing, budget alerts, root locked away | [09](docs/09-cloud.md) |
-| Before the first prod user | Cloudflare: WAF, Tunnel, Access with SSO for admin tools | [07](docs/07-prod.md#topology--start-here) |
-| Before the first prod user | Auth0: tenants for dev, stage, prod | [02](docs/02-stack.md) |
-| Before the first prod user | Resend: verify the domain (SPF, DKIM, DMARC) | [02](docs/02-stack.md) |
-| Before the first prod user | Payments: merchant of record or local provider; company checks, sandbox and live keys | [02](docs/02-stack.md) |
-| Before the first prod user | LLM provider: API account, monthly spend limit | [01](docs/01-system-design.md#rules) |
-| Before the first prod user | Slack: workspace, on-call, team and business digest channels, bot | [10](docs/10-alerts.md#routing) |
-| Before the first prod user | External uptime check and dead man's switch receiver | [10](docs/10-alerts.md#outside-the-cluster) |
-| Before the first prod user | Enter human secrets (provider keys) in the secret manager | [07](docs/07-prod.md#secrets) |
-| Before the first prod user | Legal entity, terms, privacy notice text, DPAs with vendors, security contact mailbox | [01](docs/01-system-design.md#data-model) · [15](docs/15-security.md#launch) |
-
-### Adopting
-
-Each project keeps `docs/00-mvp-system-design.md`:
-
-```md
-# 00 · MVP system design
-
-Follows mvp-system-design `<sha>`.
-
-| Doc | Deviation | Why |
-|---|---|---|
-| 12 | coverage report-only | legacy code at 40% |
-```
-
-Re-align: `git -C <mvp-system-design> log -p <sha>..main -- README.md docs/` → apply → bump `<sha>`.
 
 ## Contact
 

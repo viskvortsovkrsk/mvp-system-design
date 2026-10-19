@@ -8,7 +8,23 @@ This project is built like mvp-system-design. Its skill `mvp-system-design` is t
 - Every deviation, approved by the user, goes in `docs/00-mvp-system-design.md` with why. None unrecorded.
 - Code that breaks a rule: new code follows the rule; old code gets a task in the tracker (its 11), not a silent rewrite.
 - Before work on dev, stage or prod, read `docs/env/<env>.md`. Change an address, access path or credential → update it in the same change.
-- Skill updated → re-align per its README "Adopting" when the user asks, then bump the commit in `docs/00-mvp-system-design.md`.
+- Skill updated → re-align when the user asks: `git -C <mvp-system-design> log -p <sha>..main -- README.md docs/` → apply → bump `<sha>`.
+
+`docs/00-mvp-system-design.md`:
+
+```md
+# 00 · MVP system design
+
+Follows mvp-system-design `<sha>`.
+
+| Doc | Deviation | Why |
+|---|---|---|
+| 12 | coverage report-only | legacy code at 40% |
+
+## Upstream proposals
+
+- (rule 7)
+```
 
 ## 2. Think before coding
 
