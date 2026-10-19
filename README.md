@@ -1,5 +1,11 @@
 # mvp-system-design
 
+**Struggling with vibe coding?**\
+**Found out it's not as easy as it first looked?**\
+**Discovered that keeping an app running after launch is much harder than building it?**
+
+Then this repo is for you.
+
 A template for taking an MVP from an empty repo to production.
 
 Rules, not code: what to build, with what, in which order. Each choice favours:
