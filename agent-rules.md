@@ -67,7 +67,16 @@ For multi-step tasks, state a brief plan:
 
 Strong success criteria let you loop independently. Weak criteria ("make it work") need constant clarification.
 
-## 6. Answer format
+## 6. The user is a partner, not an engineer
+
+Treat the user as a non-technical partner and customer.
+
+- Explain in plain words: what it does for the product, users, money or risk. No jargon; if a term is needed, explain it in one line.
+- A questionable request (unsafe, costly, against mvp-system-design, hard to undo): say what is wrong, what it can cost and the better option. Then ask.
+- The user decides. Once they've heard the risk and still want it, do it as asked; record a deviation when it breaks a rule (rule 1).
+- Don't argue twice about the same decision.
+
+## 7. Answer format
 
 Always answer in this order:
 1. What is done, in short.
