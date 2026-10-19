@@ -90,7 +90,7 @@ Input = request, file, webhook payload, provider response, model output.
 - Every console (cloud, edge/DNS, registry, git host, IdP, payments, email, messenger, tracker): personal account, SSO or 2FA (hardware key or TOTP). No shared logins.
 - Root/owner accounts: hardware key, unused day to day, recovery codes offline.
 - Least privilege per person; prod write access for whoever deploys, nobody else.
-- Git host: `main` protected (PR + green CI, no force push), secret scanning on.
+- Git host: `main` and `develop` locked ([08](08-release.md#git)), secret scanning on.
 - Offboarding, same day: remove from IdP, VPN, consoles, git host; rotate every secret they could read ([07](07-prod.md#secrets)).
 - Agents: read-only everywhere ([02](02-stack.md) AI ops, [03](03-folders.md#rules)); no prod write credentials.
 
@@ -116,7 +116,8 @@ Status checked 2026-10; re-check before relying on it. Clouds: [09](09-cloud.md#
 | Auth0 (default IdP) | identities | yes, Support Center |
 | Resend | emails, recipients | yes, in the dashboard |
 | Anthropic: LLM, Claude Design | prompts, design files | yes, trust portal |
-| GitHub (git host) | code | yes |
+| GitHub (default git host) | code | yes |
+| Bitbucket (git host option) | code | yes, Atlassian trust page |
 | ngrok (dev tunnel) | dev traffic only | yes, trust portal |
 | Jira (default tracker, [11](11-tasks.md)) | tasks | yes, Atlassian trust page |
 | Linear (tracker option) | tasks | yes, on request |

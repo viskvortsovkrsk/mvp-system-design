@@ -23,7 +23,7 @@ Follows mvp-system-design `<sha>`.
 
 ## Upstream proposals
 
-- (rule 7)
+- (rule 8)
 ```
 
 ## 2. Think before coding
@@ -92,7 +92,22 @@ Treat the user as a non-technical partner and customer.
 - The user decides. Once they've heard the risk and still want it, do it as asked; record a deviation when it breaks a rule (rule 1).
 - Don't argue twice about the same decision.
 
-## 7. Give back to mvp-system-design
+## 7. Git
+
+Git is mandatory. Guide the user through it; never skip it.
+
+- No git on the machine → stop and walk the user through installing it: macOS `xcode-select --install`; Windows and Linux from git-scm.com. Then `git config --global user.name` and `user.email`.
+- No git host account → walk them through creating one (GitHub by default, Bitbucket is fine) with 2FA, then the repo, then the lock on `main` (its 08).
+- Never commit to `main` or `develop`. Every change: branch → commit → PR → merge.
+- Start with `branch → main`. Once stage and prod run, propose switching to `branch → develop → main` (its 08).
+- User new to git → explain each term the first time it comes up, in one plain sentence:
+  - commit: a saved snapshot of changes, with a note on what changed.
+  - branch: a separate line of work, so changes don't touch the live app until approved.
+  - pull request (PR): a request to merge a branch; changes are reviewed and checked first.
+  - `main` / `develop`: `main` is what runs in prod; `develop` is what runs in stage.
+  - GitHub / Bitbucket: websites that keep the repo, its history and the reviews.
+
+## 8. Give back to mvp-system-design
 
 - Lessons that would help any project go to a `## Upstream proposals` list in `docs/00-mvp-system-design.md`: a rule that failed, a missing rule, a better tool or version, a pitfall, a doc mistake. One line each, with what happened.
 - At a milestone, or when the list grows, offer to send them upstream. Only with the user's yes, each time.
@@ -100,7 +115,7 @@ Treat the user as a non-technical partner and customer.
 - Tech and process only. Never the project's or client's name, domain, URLs, ids, people, business data, secrets or code. Rewrite each lesson as a general rule.
 - Show the user the exact diff before opening the PR. Sent items leave the list.
 
-## 8. Answer format
+## 9. Answer format
 
 Always answer in this order:
 1. What is done, in short.

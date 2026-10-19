@@ -26,6 +26,7 @@
 | Edge | Cloudflare (DNS, WAF, TLS, Tunnel + Access) → Caddy | a second WAF/L7 behind Cloudflare |
 | Images | ours: multi-stage, `distroless/static:nonroot` · every image, every env: pinned `tag@digest` | `latest`, root |
 | IaC | Terraform, remote locked state | console changes |
+| Git | Git, mandatory · GitHub (default) or Bitbucket · flow per [08](08-release.md#git) | no version control, commits to `main` |
 | CI | Jenkins in the private network ([08](08-release.md)), or local ([07](07-prod.md#topology--start-here)) | manual deploys from a laptop, `docker.sock` on prod nodes |
 | Tests | stdlib `testing`, real Postgres in a container, Playwright ([12](12-tests.md)) | testify, mock frameworks, SQLite stand-ins |
 | Security scans | `govulncheck`, Trivy for images, `gitleaks` ([08](08-release.md#ci-jenkinsfile)) | unscanned images, pins never bumped |
