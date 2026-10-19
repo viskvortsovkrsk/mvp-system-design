@@ -3,7 +3,7 @@ This repo is the reference model for new projects. It holds rules, not code (apa
 When told to build or align a project "like mvp-system-design":
 1. Read README.md, then every file in docs/ in order.
 2. Apply them phase by phase (README "Build order"). Tech outside docs/02-stack.md needs the user's approval first.
-3. Record the commit followed and every deviation in the project's docs/00-mvp-system-design.md (README "Adopting").
+3. Record the commit followed and every deviation in the project's docs/00-mvp-system-design.md (format: agent-rules.md rule 1).
 
 When editing this repo:
 - Terse: rules, tables, short code blocks. No prose, no tutorials.

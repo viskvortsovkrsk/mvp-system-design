@@ -9,7 +9,7 @@
 Trunk `main`. Short branches → PR → green CI → approval → merge → delete branch. Commit message says what changed (never `-` or `fix`).
 
 - Author ≠ approver: a PR is approved by a person who did not write it; an agent's PR by a person. Enforced by `main` protection ([15](15-security.md#people-and-accounts)), never waived by admins.
-- One person on the project: deviation in `docs/00-mvp-system-design.md` ([README](../README.md#adopting)) with the compensating control (the owner reviews each release's diff after deploy, noted in `docs/releases/<ver>.md`). Before a SOC 2 window, a second approver.
+- One person on the project: deviation in `docs/00-mvp-system-design.md` ([agent rules](../agent-rules.md#1-follow-mvp-system-design)) with the compensating control (the owner reviews each release's diff after deploy, noted in `docs/releases/<ver>.md`). Before a SOC 2 window, a second approver.
 
 ## CI (Jenkinsfile)
 
