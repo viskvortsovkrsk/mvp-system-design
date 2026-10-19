@@ -10,7 +10,8 @@
 | DB | Postgres 18, managed in stage/prod · `pgx`, hand-written SQL | ORM, generic repository layer, DB inside Swarm |
 | Migrations | numbered `.sql`, forward-only, embedded, run by `cmd/migrate` ([01](01-system-design.md#postgres-roles)) | down migrations, unpinned migrate image |
 | Pooler | none; if needed — session mode | transaction mode (breaks advisory locks, prepared statements, temp tables) |
-| Cache / queue | none → Postgres table (`FOR UPDATE SKIP LOCKED`) → managed Redis | Redis inside Swarm, Kafka, RabbitMQ |
+| Redis | in Swarm, one replica ([07](07-prod.md#redis)), `go-redis`: rate-limit counters ([16](16-rate-limits.md)), cache on measured need · managed with HA when grown | business data, queues or sessions in Redis |
+| Queue | Postgres table (`FOR UPDATE SKIP LOCKED`) | Kafka, RabbitMQ |
 | Jobs | in-process or `cmd/worker` · Airflow for ETL | Go binaries wrapped in DAGs |
 | Auth | managed IdP (Auth0, platform IdP, regional OIDC) + own signed cookie | own IdP, Keycloak |
 | Payments | merchant of record or local provider, plus `fake` | handling cards |
@@ -19,7 +20,7 @@
 | Config | env vars, `.env.example`, secrets via `*_FILE` | viper, tracked `.env` |
 | Logs | `log/slog` JSON → Alloy → Loki | zap, logrus, `log.Printf` |
 | Metrics | Alloy (cAdvisor, node) → Prometheus → Grafana | provider monitoring as primary |
-| Alerts | Grafana alerting → messenger bot (Telegram by default) | email-only, alerts clicked in UI |
+| Alerts | Grafana alerting → messenger bot: Slack (default, SOC 2) or Telegram (no SOC 2), [15](15-security.md#vendors) | email-only, alerts clicked in UI |
 | AI ops | Grafana MCP, Viewer token, `--disable-write` | Editor tokens for agents |
 | Runtime | Docker Swarm · compose of the same shape for dev | Kubernetes |
 | Edge | Cloudflare (DNS, WAF, TLS, Tunnel + Access) → Caddy | a second WAF/L7 behind Cloudflare |

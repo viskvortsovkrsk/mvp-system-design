@@ -16,11 +16,13 @@ Grafana alerting, provisioned from `deploy/observability/grafana/alerting.yaml`.
 | Crash loop | task starts in 15m > 2 × desired + 2 | 0 | crit |
 | Unhealthy | healthcheck replacements in 15m > 0 | 0 | warn |
 | Node silent | a known node stops reporting | 5m | crit |
+| Redis | memory > 80% of `maxmemory`, rejected writes, or AOF write error (Alloy `prometheus.exporter.redis`); down is `Dependency down` | 5m | crit |
 | Disk | `/` or `/var/lib/docker` > 85% (> 95% crit) | 10m | warn |
 | Pipeline gap | query error; expected service or node absent from logs; Alloy dropping | 10m | crit |
 | Secret in logs | `://user:pass@`, `Bearer `, signed URL query (`Signature=`, `sig=`), `BEGIN … KEY` | 0 | crit |
 | Security | `error_kind=security_violation`; auth failures per IP > N / 5m | 0 | warn |
 | LLM | model call failures > 5%, or spend per hour > budget | 10m | warn |
+| Global limit | `event=rate_limit_hit` with `scope=global` ([16](16-rate-limits.md#events)) | 0 | warn |
 | Erasure late | an account erasure or tenant offboarding 5 days from its deadline, not done ([01](01-system-design.md#data-model)) | 0 | crit |
 | Backup missing | no new dump in 26h | 0 | crit |
 | Cert expiry | < 14 days | 1h | warn |
@@ -30,7 +32,7 @@ Grafana alerting, provisioned from `deploy/observability/grafana/alerting.yaml`.
 The cluster can't report its own death:
 - External uptime check on public URLs, every 1m; 2 failures → crit.
 - Dead man's switch: an always-firing watchdog sent to an external receiver; silence → crit.
-- Provider alerts (Terraform module `alerts`): VM down; Postgres down, storage > 85%, connections > 80%; Redis down, memory > 80%. Same channels.
+- Provider alerts (Terraform module `alerts`): VM down; Postgres down, storage > 85%, connections > 80%. Same channels.
 
 ## Routing
 
@@ -64,6 +66,7 @@ Provisioned from `deploy/observability/grafana/dashboards/`. No UI edits. One ea
 | Nodes, Swarm | CPU, memory, disk; replicas desired vs running |
 | Postgres | connections, top queries by total time (`pg_stat_statements`, [01](01-system-design.md#indexes)) |
 | Business | `event` counts per name |
+| Rate limits | usage against limit per action and scope, 429s, warnings and hits ([16](16-rate-limits.md)) |
 
 ## No data
 

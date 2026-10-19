@@ -17,7 +17,7 @@
 | Firewall | Security Group | Firewall rules | NSG | Security group |
 | L4 load balancer | NLB | Passthrough NLB | Load Balancer | Network Load Balancer |
 | Postgres | RDS | Cloud SQL | PG Flexible Server | Managed PostgreSQL |
-| Redis | ElastiCache (Redis OSS) | Memorystore for Redis | Azure Managed Redis | Managed Valkey (Redis API) |
+| Redis, grown only ([07](07-prod.md#redis)) | ElastiCache (Redis OSS) | Memorystore for Redis | Azure Managed Redis | Managed Valkey (Redis API) |
 | Object storage | S3 | GCS (S3 via HMAC) | Blob (no S3 API) | Object Storage |
 | Cold class, 3y backups | Glacier Deep Archive | Archive | Archive tier | ICE |
 | Object lock | Object Lock | Bucket Lock | immutability policy | Object Lock |
@@ -25,6 +25,7 @@
 | Secrets | Secrets Manager | Secret Manager | Key Vault | Lockbox |
 | Machine identity | instance role | service account | managed identity | service account |
 | Terraform state | S3 + lockfile | GCS | storage account | Object Storage (S3 backend) |
+| SOC 2 Type II ([15](15-security.md#vendors)) | yes, AWS Artifact | yes, Compliance Reports Manager | yes, Service Trust Portal | **none published** (ISO, PCI DSS, 152-FZ instead): a SOC 2 project needs a deviation |
 
 ## Terraform
 

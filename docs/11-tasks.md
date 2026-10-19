@@ -4,7 +4,7 @@ Every task and its detail live in the tracker. A task and a doc disagree → the
 
 ## Tracker
 
-- The user picks it at project start (e.g. Todoist). The agent asks, never picks.
+- The user picks it at project start: Jira (default, SOC 2), Linear (SOC 2) or Todoist (no SOC 2), [15](15-security.md#vendors). The agent asks, offering the default, never picks.
 - Needs: MCP server or API for the agent; projects, sections, labels, priority, due dates, comments.
 - One project per repo: `<project>-development`. Description: repo path, docs to start from, the legend below, "maintained by the agent: new work goes here, closed when done".
 - Tracker, project name and id, and [Sync](#sync) go into the project's `.claude/CLAUDE.md`.

@@ -104,5 +104,6 @@ One-shot jobs (migrate) must land in Loki too.
 |---|---|
 | ops logs, metrics | prod 30d · stage/dev 7d |
 | security audit | ≥ 1y, append-only, own table |
+| access and change trail: cloud audit log, console sign-ins, VPN and SSH sessions, CI builds and deploys | ≥ 400d (a 12-month audit window + lag), outside the cluster |
 | domain journals (LLM interactions, game logs) | own store, TTL ≤ 180d, never copied into ops logs |
 | alert chat | auto-delete ≤ 30d |

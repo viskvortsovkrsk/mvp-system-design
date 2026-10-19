@@ -6,7 +6,10 @@
 
 ## Git
 
-Trunk `main`. Short branches → PR → green CI → merge → delete branch. Commit message says what changed (never `-` or `fix`).
+Trunk `main`. Short branches → PR → green CI → approval → merge → delete branch. Commit message says what changed (never `-` or `fix`).
+
+- Author ≠ approver: a PR is approved by a person who did not write it; an agent's PR by a person. Enforced by `main` protection ([15](15-security.md#people-and-accounts)), never waived by admins.
+- One person on the project: deviation in `docs/00-mvp-system-design.md` ([README](../README.md#adopting)) with the compensating control (the owner reviews each release's diff after deploy, noted in `docs/releases/<ver>.md`). Before a SOC 2 window, a second approver.
 
 ## CI (Jenkinsfile)
 
@@ -18,14 +21,14 @@ Trunk `main`. Short branches → PR → green CI → merge → delete branch. Co
 6. UI + e2e on those images, with fakes ([12](12-tests.md)).
 7. Git tag.
 8. Deploy stage (auto) → smoke → integration with real providers → UI + e2e ([12](12-tests.md)).
-9. Deploy prod: manual approval, same digests.
+9. Deploy prod: manual approval (`input`, `submitter` = approvers group, `submitterParameter`; fails when the approver wrote a commit in the release), same digests. The approver is kept in the build record ([12](12-tests.md#jenkins)).
 10. Messenger notice + Grafana annotation.
 
 CI agent runs on its own VM in the private network (local option: [07](07-prod.md#topology--start-here)); registry login via machine identity.
 
 ## Image
 
-- One Dockerfile ([02](02-stack.md)). `golang` builder, `--platform=$BUILDPLATFORM`, cache mounts, `go.mod`/`go.sum` copied first.
+- One Dockerfile ([02](02-stack.md)). `golang` builder, `--platform=$BUILDPLATFORM`, cache mounts, build context = repo root, `src/go.mod`/`src/go.sum` copied first.
 - `CGO_ENABLED=0 go build -trimpath -ldflags "-s -w -X main.version=<ver>"` for every `cmd/*` → `/app/<bin>`. The stack picks one per service via `command`.
 - Runtime image per [02](02-stack.md). Exec-form entrypoint. Healthcheck set per service in the stack ([07](07-prod.md)).
 - `.dockerignore`: `.git`, `.env*`, secrets, tests, local binaries. No secrets in build args or layers.

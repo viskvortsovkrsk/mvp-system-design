@@ -1,12 +1,13 @@
 # 07 · Prod
 
+Env file: `docs/env/prod.md` ([03](03-folders.md#environment-files)).
+
 ## Topology — start here
 
 - 3 VMs in 3 zones, all Swarm managers, all run apps. Private IPs only, NAT egress. Separate SSD at `/var/lib/docker`.
 - Edge: CDN/WAF → L4 LB :443 → Caddy (global) with origin cert. Firewall: 443 only from the edge, plus authenticated origin pull (or a tunnel).
-- Postgres and Redis are managed services, never containers in Swarm.
-  - Postgres: private, TLS `verify-full`, PITR ≥ 14d, deletion protection. Roles per [01](01-system-design.md#postgres-roles).
-  - Redis: only when a cache/queue is needed ([02](02-stack.md)); private, TLS, auth.
+- Postgres is a managed service, never a container in Swarm: private, TLS `verify-full`, PITR ≥ 14d, deletion protection. Roles per [01](01-system-design.md#postgres-roles).
+- Redis runs in Swarm ([Redis](#redis)).
 - Buckets: one per task (below).
 - Private registry, secret manager, machine identity per VM.
 - Admin: no public SSH, no public admin UIs. WireGuard VM holds the only public IP; SSH goes over it. Grafana and CI behind zero-trust tunnel + SSO.
@@ -17,7 +18,8 @@
 ## Topology — grown
 
 - 3 small managers (label `apps=false`, not drained) + ≥ 2 workers + 1 ops node (`observability=true`). Labels set by cloud-init, never by hand.
-- Postgres and Redis with HA (standby in another zone).
+- Postgres with HA (standby in another zone).
+- Redis: managed with HA ([09](09-cloud.md#buy-list)) when a lost or down Redis costs more than a reset of counters and cache.
 - Hub network (VPN, CI, registry) peered to the prod and stage accounts.
 
 ## Swarm service
@@ -39,6 +41,44 @@ healthcheck: {test: ["CMD", "/app/api", "-healthcheck"], interval: 10s, retries:
 - Nodes pull via credential helper or machine identity. Forwarded registry tokens expire, and tasks then can't reschedule.
 - Overlay networks unencrypted unless the cloud firewall passes ESP.
 - Bind mounts only to paths cloud-init creates; a missing path silently rejects the task.
+
+## Redis
+
+Holds only data we can lose: rate-limit counters ([16](16-rate-limits.md)), cache. Never business data, queues or sessions.
+
+```yaml
+redis:
+  image: redis:<8.x>@sha256:…
+  command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
+  configs: [{source: redis-conf-<hash>, target: /usr/local/etc/redis/redis.conf}]
+  secrets: [{source: redis-acl-v<N>, target: redis-acl}]
+  volumes: [redis-data:/data]
+  networks: [redis]
+  deploy:
+    replicas: 1
+    placement: {constraints: [node.labels.redis == true]}
+    resources: {limits: {cpus: "1", memory: 512M}}
+    update_config: {order: stop-first}
+  healthcheck: {test: ["CMD", "redis-cli", "--no-auth-warning", "--user", "healthcheck", "--pass", "-", "ping"], interval: 10s, retries: 3}
+```
+
+```conf
+# deploy/redis/redis.conf
+aclfile /run/secrets/redis-acl
+appendonly yes
+appendfsync everysec
+maxmemory 384mb
+maxmemory-policy noeviction
+protected-mode yes
+```
+
+- One replica, pinned by the `redis=true` label (cloud-init, one node), AOF on that node's data disk. `stop-first` ([Swarm service](#swarm-service)).
+- `maxmemory` ≈ 75% of the container limit. `noeviction`: a full Redis rejects writes and alerts ([10](10-alerts.md#rules)), never drops counters silently.
+- ACL file as a Swarm secret: `default` off; `app` gets `~rl:* ~cache:*` and `+@read +@write +@scripting -@dangerous`; `healthcheck` is `nopass` with `+ping` only.
+- Own overlay network `redis`; only services that use it join. No published port.
+- Node lost → relabel another node, redeploy: Redis starts empty, counters and cache reset. Accepted.
+- Not backed up. Restart, deploy, node loss: the app keeps working ([16](16-rate-limits.md#counters)).
+- Dev and stage run the same service and files ([05](05-dev.md), [06](06-stage.md)).
 
 ## Secrets
 

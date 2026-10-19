@@ -15,11 +15,11 @@ billing ──► api /internal/* (service token)
 - **One owner per table.** Only the owning service reads/writes it; others call the owner.
 - **Internal calls:** HTTP/JSON + service token. Never trust identity or tenant headers from the network. `/internal/*` is never routed at the edge.
 - **Stateless processes.** Session = signed cookie (Ed25519/RS256); other services verify it with the public key.
-- **Postgres is the source of truth.** Cache or queue only on measured need ([02](02-stack.md)).
+- **Postgres is the source of truth.** Redis holds only what we can lose: rate-limit counters, cache ([07](07-prod.md#redis)). Queues stay in Postgres ([02](02-stack.md)).
 - **Money/budget invariants inside one DB transaction** (reserve → settle). No sagas.
 - **Buy, don't build:** auth, payments, email, LLM. Store opaque provider ids and minimum PII. Erasing personal data: [Data model](#data-model).
 - **Every external provider has a `fake`** for dev/test. Dev shortcuts (fake payments, dev login, prompt trace) are fatal at startup when `ENVIRONMENT=prod`; a test proves it.
-- **LLM cost ceiling:** reserve before the call, settle after; `max_tokens`; input length cap; per-user hourly/daily caps; prompt caching; tokens and cost logged per call.
+- **LLM cost ceiling:** reserve before the call, settle after; `max_tokens`; input length cap; rate limits per user and global ([16](16-rate-limits.md#llm)); prompt caching; tokens and cost logged per call.
 - **Stream, never slurp.** Files, feeds, responses are iterators. Peak memory stays flat as input grows (stress test).
 - **Config:** env vars. Secrets from files (`X_FILE=/run/secrets/x`). Missing required value → exit at startup.
 - **HTTP server:** read/write/idle timeouts, graceful shutdown, `/healthz` (process alive), `/readyz` (dependencies reachable). Each binary has a `-healthcheck` flag that calls its own `/healthz` (no curl in the image).
@@ -53,7 +53,7 @@ header {
 - Providers widen only the directives they need, each origin with a `#` comment saying why: login provider → `form-action` (redirects after sign-out are checked too); payment overlay → `script-src`, `frame-src`, `connect-src`; analytics tag ([02](02-stack.md)) → `script-src`, `img-src`, `connect-src`.
 - No inline `<script>`, `<style>`, `style=` or `on*=` in templates; CSP blocks them. JS and CSS are files in `static/`.
 - Bodies capped with `http.MaxBytesReader` (1 MB default); uploads stream with their own cap.
-- Rate limits: login, signup and other unauthenticated writes per IP at the edge (WAF rate rules); costly routes per user in the app (LLM caps above).
+- Rate limits: [16](16-rate-limits.md).
 
 ## Inbound webhooks
 
@@ -129,6 +129,8 @@ Account erasure: a job, idempotent, retried; done within 30 days of the request 
 - Every `text`, `varchar`, `jsonb` and `inet` column of every table has `COMMENT 'pii'` or `COMMENT 'not pii'`; a catalog test fails on one without. User-written text is `pii`. `pii` columns are nullable.
 - Not a merchant of record → invoices are ours to keep for the legal term: own table, outside erasure, purged when the term ends.
 - Webhook for an erased user → 200, logged, no effect.
+- Account export (GDPR Art. 15, 20): requested in the app, one per day. A job writes a zip (JSON of every row with the user's `user_id`, plus their files) to `exports` ([07](07-prod.md#buckets--one-per-task)) and emails a signed link valid 7 days. Done within 30 days; audited ([15](15-security.md#audit-log)).
+- Privacy notice at `/privacy`: what is kept and why, the vendors that receive it ([15](15-security.md#vendors)), retention, how to export or erase, contact. Linked from sign-up and every footer; dated, changes listed.
 - Tenant offboarding: when the contract ends, export on request (rows as JSON, files). 30 days after the end: delete the tenant's bucket objects (every version) and rows; invoices stay per the rule above; logged like an account erasure.
 - Soft delete (`deleted_at`) is for non-personal data that must stay visible to existing owners (a product withdrawn from sale).
 

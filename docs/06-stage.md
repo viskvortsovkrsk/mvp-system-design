@@ -2,10 +2,12 @@
 
 Purpose: run the exact release — same digests, stack file, migrations, deploy script — before prod.
 
+Env file: `docs/env/stage.md` ([03](03-folders.md#environment-files)).
+
 ## Shape
 
 - Same Terraform modules and `deploy/stack.yml` as prod. Own cloud account/project, state, secret store, DB, buckets.
-- Small: 1 Swarm node; managed Postgres (and Redis, if prod has it) on the smallest tier, no HA (~25% of prod cost).
+- Small: 1 Swarm node; managed Postgres on the smallest tier, no HA; Redis in Swarm like prod (~25% of prod cost).
 - Backups: managed PITR only, 7d. No cold copies.
 - Hosts `stage-<svc>.<domain>`, behind SSO at the edge, `X-Robots-Tag: noindex`. `/webhooks/*` skips SSO (the signature is the auth, [01](01-system-design.md#inbound-webhooks)); CI passes with an edge service token.
 - Third parties: sandboxes only (payment test terminal, dev store, supplier test accounts).
