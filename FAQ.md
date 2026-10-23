@@ -18,4 +18,13 @@ Plain-language answers for non-technical readers. Technical detail: [02 stack](d
 - **Fewer outages.** Fewer moving parts, fewer things that go wrong.
 - **Switching later is possible.** If the product outgrows Swarm, moving is a planned project, not a rebuild.
 
-**In short:** both keep the product cheaper, safer and faster to build at the start, and both can be revisited if it grows a lot.
+## Why an SQL database (Postgres), not NoSQL?
+
+- **Business data is connected.** Users, orders, payments, invoices all point to each other. SQL databases are built for exactly that; NoSQL makes the app stitch it together by hand.
+- **Money stays correct.** A payment and its balance change are saved together or not at all. Many NoSQL databases can't promise that, and errors show up as wrong numbers.
+- **Answers to new questions, fast.** "Top customers last month" is one query, without rebuilding anything. NoSQL needs the question known in advance.
+- **Flexible when needed.** Postgres stores free-form data too (JSON), so the main NoSQL advantage comes built in.
+- **Proven and easy to hire for.** 30+ years old, used by banks and the biggest websites, known by almost every developer and AI assistant.
+- **Big enough for a long time.** One Postgres server handles millions of users. NoSQL's scale pays off only far beyond an MVP.
+
+**In short:** all three keep the product cheaper, safer and faster to build at the start, and both can be revisited if it grows a lot.
