@@ -14,7 +14,12 @@ billing ──► api /internal/* (service token)
 - **Modular monolith.** One repo, one Go module, N binaries in `cmd/`, one image. Split out a binary only for different secrets, failure domain or scaling.
 - **One owner per table.** Only the owning service reads/writes it; others call the owner.
 - **Internal calls:** HTTP/JSON + service token. Never trust identity or tenant headers from the network. `/internal/*` is never routed at the edge.
-- **Stateless processes.** Session = signed cookie (Ed25519/RS256); other services verify it with the public key.
+- **Stateless processes.** Any replica serves any request; any replica can be killed at any time and nothing is lost.
+  - Session = signed cookie (Ed25519/RS256); other services verify it with the public key. No sticky sessions.
+  - No local disk: files go to buckets ([07](07-prod.md#buckets--one-per-task)), temp files live and die within one request or job.
+  - No in-memory state across requests: memory holds only what startup rebuilds (config, templates). Counters, caches, pending work go to Postgres or Redis.
+  - Long work runs as a Postgres-queue job, so a killed replica's job is picked up by another.
+  - Exception: Redis, one pinned replica in Swarm ([07](07-prod.md#redis)).
 - **Postgres is the source of truth.** Redis holds only what we can lose: rate-limit counters, cache ([07](07-prod.md#redis)). Queues stay in Postgres ([02](02-stack.md)).
 - **Money/budget invariants inside one DB transaction** (reserve → settle). No sagas.
 - **Buy, don't build:** auth, payments, email, LLM. Store opaque provider ids and minimum PII. Erasing personal data: [Data model](#data-model).
