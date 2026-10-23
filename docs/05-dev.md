@@ -13,7 +13,7 @@ Env file: `docs/env/dev.md` ([03](03-folders.md#environment-files)).
 - Top-level `name: <project>`; no `container_name` (parallel worktrees).
 - Same image, binaries, Caddy routes and security headers as prod.
 - Postgres = prod major version. `migrate` (one-shot) → `db-roles` (sets `app` and `readonly` passwords) → apps connect as `app`.
-- MinIO (S3 API) with the same buckets as prod, created by an init job. Redis: the prod service and files ([07](07-prod.md#redis)).
+- MinIO (S3 API) with the same buckets as prod, created by an init job, routed by Caddy so signed upload URLs ([15](15-security.md#uploads)) work from the browser. Redis: the prod service and files ([07](07-prod.md#redis)).
 - Loki, Alloy, Prometheus, Grafana mounted from `deploy/observability/` — same files as prod.
 - Host ports: `127.0.0.1` only, unique per project, overridable in `.env`. Never default 5432/8080/3000.
 - Images pinned ([02](02-stack.md)).
