@@ -16,6 +16,8 @@ Rules, not code: what to build, with what, in which order. Each choice favours:
 
 Security, privacy, rate limits, observability, backups and release are in from day one, not added after launch.
 
+Not technical? Start with the [FAQ](FAQ.md): why these choices, in plain language.
+
 ## How to use it: with an AI agent
 
 Model: Claude Opus 5.5 or GPT-6.1 Sol, effort medium or higher.
