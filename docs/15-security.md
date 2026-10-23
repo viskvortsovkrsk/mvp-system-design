@@ -58,7 +58,17 @@ Input = request, file, webhook payload, provider response, model output.
 
 ## Uploads
 
-- Cap per route; stream to the bucket ([07](07-prod.md#buckets--one-per-task)).
+Default: the browser uploads straight to the bucket by signed URL; the file never passes through a service. Through a service only when the file is not stored (parsed and dropped) or fits the body cap ([01](01-system-design.md#web-security)); then it streams with its own per-route cap.
+
+| Step | Who | Does |
+|---|---|---|
+| 1. Ask | browser → service `POST /uploads` | name, size, type |
+| 2. Sign | service | authz, rate limit ([16](16-rate-limits.md)), size cap and type allowlist per route; `upload` row `pending`; signed URL to `tmp` ([07](07-prod.md#buckets--one-per-task)), TTL ≤ 15 min, one key, size bound in the signature (POST policy `content-length-range` or signed `Content-Length`) |
+| 3. Put | browser → bucket | upload, progress bar, retry |
+| 4. Confirm | browser → service `POST /uploads/{id}/done` | service checks the object (size, type from content, below), re-encodes images, copies to the task's bucket, row `ready` |
+
+- Never confirmed → `tmp` lifecycle deletes it; a job marks the row `expired`.
+- Bucket CORS: the app's origins, `PUT`/`POST` only. CSP `connect-src` adds the bucket origin, with its `#` comment.
 - Type from the content (`http.DetectContentType`) against an allowlist, never from the name or `Content-Type`.
 - Object key = `uuidv7()`. The user's file name is a `pii` column, never a path.
 - Images re-encoded server-side: strips EXIF (GPS is PII) and polyglots.
