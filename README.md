@@ -49,7 +49,7 @@ Model: Claude Opus 5.5 or GPT-6.1 Sol, effort medium or higher.
 | [13 code quality](docs/13-code-quality.md) | SonarQube, gate, agent rules |
 | [14 UI](docs/14-ui.md) | look, motion, springs, sources, how to apply, recipes |
 | [15 security](docs/15-security.md) | map, threat model, authz, sign-in, audit, input, uploads, outbound, tokens, LLM, people, supply chain, vendors, launch, incident |
-| [16 rate limits](docs/16-rate-limits.md) | every non-read action: per user and global, second/minute, day, month, enforce or alert, events |
+| [16 rate limits](docs/16-rate-limits.md) | every non-read action: per user, IP and global, second/minute, day, month, enforce or alert, events |
 
 Environments: `dev` · `stage` · `prod` (the `ENVIRONMENT` value, file names, hostnames).
 

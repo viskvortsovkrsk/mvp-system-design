@@ -4,17 +4,18 @@
 
 - Every action a user can take other than reading has limits: each unsafe-method route, each job a user starts, each email, upload or LLM call a user causes.
 - Reads: per IP at the edge only.
-- Unauthenticated writes (login, signup, forms): per IP at the edge (WAF rate rules), plus the app limits once a user is known.
+- Unauthenticated writes (login, signup, forms): per IP at the edge (WAF rate rules), plus the app limits once a user is known. The edge zone might be shared with another site ([07](07-prod.md#topology--start-here)); if it is, the app's `ip` scope replaces the edge rule.
 - Exempt, each listed with its reason: signed webhooks ([01](01-system-design.md#inbound-webhooks)), `/internal/*`, logout.
 
 ## Limits
 
-Per action, two scopes:
+Per action, up to three scopes:
 
 | Scope | Counts | Required |
 |---|---|---|
 | `user` | one user's calls | every action |
 | `global` | all users' calls together | LLM actions; others when one action can exhaust a shared resource |
+| `ip` | one client IP's calls (`client_ip`, [04](04-logs.md#fields)) | unauthenticated writes the edge can't limit ([Scope](#scope)) |
 
 Per scope, windows:
 
@@ -56,7 +57,7 @@ Each scope has `mode`:
 ## Counters
 
 - In Redis ([07](07-prod.md#redis)), client `go-redis`, package `internal/ratelimit`; every service uses it directly. Shared across replicas by design. In-memory counters are never limits.
-- Key per window: `rl:<action>:<subject>:<period>:<period_start>`, `subject` = `u:<user_id>` or `global`. TTL = window length + 1 hour (month: to its end + 1 day). No cleanup job.
+- Key per window: `rl:<action>:<subject>:<period>:<period_start>`, `subject` = `u:<user_id>`, `ip:<client_ip>` or `global`. TTL = window length + 1 hour (month: to its end + 1 day). No cleanup job.
 - One script per call checks every window, then increments all of them: a rejected call counts nowhere. `ARGV` = limit per key (`0` for `alert`), then TTL per key.
 
 ```lua
