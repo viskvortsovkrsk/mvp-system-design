@@ -37,6 +37,7 @@ docs/                    00-mvp-system-design.md, NN-topic.md, env/{dev,stage,pr
 ## Rules
 
 - Code lives in `src/`; the root holds build, deploy and docs. Code paths in these docs (`cmd/`, `internal/`, `e2e/`, `dags/`) are under `src/`; Go and Python commands run there.
+- Material before code (copy, email texts, a static prototype): `docs/<topic>/`, outside `src/`, until a phase turns it into code; a prototype becomes `templates/` and `static/` ([14](14-ui.md#look)).
 - No secrets in the tree, even gitignored. Local ones: `~/.config/<project>/`, mode 600.
 - No binaries, dumps, `dist/`, `tmp/`, `reports/` in git.
 - Agents can't read secrets: `.claude/settings.json` has `{"permissions": {"deny": ["Read(~/.config/<project>/**)"]}}`.
