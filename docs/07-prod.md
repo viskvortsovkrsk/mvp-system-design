@@ -6,6 +6,8 @@ Env file: `docs/env/prod.md` ([03](03-folders.md#environment-files)).
 
 - 3 VMs in 3 zones, all Swarm managers, all run apps. Private IPs only, NAT egress. Separate SSD at `/var/lib/docker`.
 - Edge: CDN/WAF → L4 LB :443 → Caddy (global) with origin cert. Firewall: 443 only from the edge, plus authenticated origin pull (or a tunnel).
+  - The zone may be shared with another site, though not always. If it is: zone settings and rule sets (TLS mode, HTTPS redirect, WAF, rate and config rules) are one per zone, and the project's Terraform would replace the neighbour's. Change none. Instead: authenticated origin pull per hostname, an origin cert for its own name only, per-IP limits in the app ([16](16-rate-limits.md#scope)).
+  - No zone-wide HTTPS redirect: LB and firewall also pass :80 from the edge, and Caddy redirects it to https. Otherwise plain-http links fail at the edge.
 - Postgres is a managed service, never a container in Swarm: private, TLS `verify-full`, PITR ≥ 14d, deletion protection. Roles per [01](01-system-design.md#postgres-roles).
 - Redis runs in Swarm ([Redis](#redis)).
 - Buckets: one per task (below).
