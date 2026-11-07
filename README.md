@@ -28,7 +28,7 @@ Model: Claude Opus 5.5 or GPT-6.1 Sol, effort medium or higher.
    Add the mvp-system-design skill from https://github.com/viskvortsovkrsk/mvp-system-design (skills/mvp-system-design), then build this project like mvp-system-design.
    ```
 
-2. Copy [agent-rules.md](agent-rules.md) into the project's `CLAUDE.md` (Claude) or `AGENTS.md` (other agents): how every session thinks, keeps it simple, changes only what's asked and verifies.
+2. Copy [agent-rules.md](agent-rules.md) into the project's `CLAUDE.md` (Claude) or `AGENTS.md` (other agents): how every session thinks, keeps it simple, changes only what's asked and verifies. The rules only: the docs stay in the skill (Codex reads at most 32 KiB of `AGENTS.md` by default; the docs are about 90 KB).
 
 ## What's inside
 
