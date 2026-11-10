@@ -20,6 +20,11 @@ billing ──► api /internal/* (service token)
   - No in-memory state across requests: memory holds only what startup rebuilds (config, templates). Counters, caches, pending work go to Postgres or Redis.
   - Long work runs as a Postgres-queue job, so a killed replica's job is picked up by another.
   - Exception: Redis, one pinned replica in Swarm ([07](07-prod.md#redis)).
+  - Exception, to avoid: work that must keep its state in memory, because loading and saving it at every step is too slow (a simulation loop, a live session). First try to fit it to the rules above. When it can't be:
+    - Its own binary. The public one stays stateless.
+    - One replica runs a unit at a time. It holds a lease on the unit in Postgres (its name and an expiry), renews it, and every write checks it. A replica that lost its lease stops and writes nothing.
+    - It saves a snapshot of the unit to Postgres on a timer and on shutdown.
+    - Replica killed → the lease runs out → another replica loads the last snapshot. Lost: at most one snapshot interval; the project's architecture doc says how long that is.
 - **Postgres is the source of truth.** Redis holds only what we can lose: rate-limit counters, cache ([07](07-prod.md#redis)). Queues stay in Postgres ([02](02-stack.md)).
 - **Money/budget invariants inside one DB transaction** (reserve → settle). No sagas.
 - **Buy, don't build:** auth, payments, email, LLM. Store opaque provider ids and minimum PII. Erasing personal data: [Data model](#data-model).
@@ -142,7 +147,7 @@ Account erasure: a job, idempotent, retried; done within 30 days of the request 
 ## Indexes
 
 What to index:
-- Named queries come from `pg_stat_statements`: on in every env (dev: `shared_preload_libraries` in compose; stage/prod: the `postgres` module), extension created by `migrate`. Top queries by total time are on the Postgres dashboard ([10](10-alerts.md#dashboards)).
+- Named queries come from `pg_stat_statements`: on in every env (dev: `shared_preload_libraries` in compose; stage/prod: the `postgres` module). Only a superuser may create the extension, and `owner` is none: the cluster's admin creates it when the database is made (dev: the Postgres init script; tests: the harness; stage/prod: the provider's admin user, with the grant in [Postgres roles](#postgres-roles)). `migrate` keeps `CREATE EXTENSION IF NOT EXISTS` as a check. Top queries by total time are on the Postgres dashboard ([10](10-alerts.md#dashboards)).
 - Each index serves a named query; the PR shows its `EXPLAIN (ANALYZE, BUFFERS)` before and after, on prod-like volume. No index "just in case": each one slows every write.
 - Tenant first: RLS puts `tenant_id = …` in every query, so composites lead with `tenant_id`, then equality columns, then the range or sort column: `(tenant_id, status, created_at)`.
 - Cast the parameter, never the column, RLS policies included: `tenant_id = current_setting('app.tenant_id')::uuid`. A function on a column needs an expression index on it.

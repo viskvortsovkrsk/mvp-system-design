@@ -16,6 +16,9 @@
 - Coverage counts statements over the tier's scope (`-coverpkg`). A package without tests counts as 0%. Left out only code that never runs in prod (`e2e/`, `scripts/`, dev-only `cmd/`), listed in the script. Browser JS: UI tests, not measured.
 - Each real provider client is its own package, apart from its interface and `fake` ([01](01-system-design.md)). What a sandbox can't trigger (5xx, timeouts) the package's own `httptest` tests cover, in the same run.
 - Integration runs the isolation tests ([01](01-system-design.md#tenant-isolation-mandatory)).
+- Throwaway services run as in prod: same image, config and users (Postgres roles per [01](01-system-design.md#postgres-roles); Redis `redis.conf` and ACL per [07](07-prod.md#redis)). A command the app's user may not run fails the test, not prod.
+- Chance (a seeded simulation, a shuffle, a timer): the test fixes the seed and prepares the state so the event must happen. Never wait for it to turn up. Never sleep and then expect progress: wait on the state.
+- A branch only a race reaches (a write failing as the peer hangs up) can't be covered on purpose and moves coverage from run to run. Fold that exit into one statement with the normal one, or build the state the race leaves and test that.
 - `TESTS_REQUIRED=1` in CI and stage: a test that would skip for a missing service or credential fails instead.
 - Stage runs use stage's test accounts and sandbox credentials, never prod's, and remove what they create. A provider with no sandbox gets read-only or dry-run calls only.
 
