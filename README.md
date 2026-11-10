@@ -8,6 +8,8 @@ Then this repo is for you.
 
 A template for taking an MVP from an empty repo to production.
 
+Want to see it used? I build one real app with it, from an idea to production, in a free video course: [vlad.devmand.com/free-course](https://vlad.devmand.com/free-course?utm_source=github&utm_medium=readme).
+
 Rules, not code: what to build, with what, in which order. Each choice favours:
 
 - **Performance:** a Go modular monolith, Postgres, no framework or ORM between the code and the database.
