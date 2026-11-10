@@ -14,12 +14,14 @@ Git is mandatory from the first line of code. Host: GitHub (default) or Bitbucke
 | Stage and prod running | `<branch>` → PR → `develop` → release PR → `main` | `develop` |
 
 - `main` is locked from day 1, `develop` from when it exists: no direct commits by anyone, owner included; changes only by PR with green CI; no force-push, no deletion. A ruleset on the host, no bypass.
+  - The plan must allow it: on the default host a private repo gets rulesets and secret scanning on a paid plan only, a day-1 cost. Without it: `scripts/hooks/pre-commit` and `pre-push` refuse `main` and `develop` (`git config core.hooksPath scripts/hooks` in every clone), `gitleaks` in CI ([CI](#ci-jenkinsfile)) stands in for secret scanning, and the gap is a deviation ([agent rules](../agent-rules.md#1-follow-mvp-system-design)).
 - CI builds, scans and deploys stage from the integration branch ([CI](#ci-jenkinsfile)).
 - Release PR `develop` → `main`: on merge, `main` is tagged and prod gets the digests stage tested for that `develop` commit. Never rebuilt.
 - Hotfix: branch from `main` → PR → `main` (built, stage, prod) → merge `main` back into `develop`.
 - Short branches, deleted after merge. Commit message says what changed (never `-` or `fix`).
 
 - Author ≠ approver: a PR is approved by a person who did not write it; an agent's PR by a person. Enforced by `main` protection ([15](15-security.md#people-and-accounts)), never waived by admins.
+- An agent that works through the owner's git account opens its PRs as the owner, and the host refuses a review of one's own PR: required approvals stay 0, the agent never merges, and the owner's merge is the approval.
 - One person on the project: deviation in `docs/00-mvp-system-design.md` ([agent rules](../agent-rules.md#1-follow-mvp-system-design)) with the compensating control (the owner reviews each release's diff after deploy, noted in `docs/releases/<ver>.md`). Before a SOC 2 window, a second approver.
 
 ## CI (Jenkinsfile)

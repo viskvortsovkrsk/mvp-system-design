@@ -17,7 +17,7 @@ Rules not covered elsewhere. Already decided, kept where they are:
 
 ## Threat model
 
-- Each project keeps `docs/NN-threats.md`: one table, updated in the PR that adds an entry point or a data class.
+- Each project keeps `docs/OWN-N-threats.md`: one table, updated in the PR that adds an entry point or a data class.
 
 | Asset | Who wants it | Entry point | Control | Test |
 |---|---|---|---|---|
@@ -115,7 +115,7 @@ Default: the browser uploads straight to the bucket by signed URL; the file neve
 ## Vendors
 
 - A vendor that receives customer data or prod access has a current SOC 2 Type II report. None → it gets neither, or the project records a deviation.
-- Project keeps `docs/NN-vendors.md`: vendor, what it gets, report period, next review. Reports downloaded and reviewed yearly (a tracker task, [11](11-tasks.md)). The privacy notice lists the same vendors ([01](01-system-design.md#data-model)).
+- Project keeps `docs/OWN-N-vendors.md`: vendor, what it gets, report period, next review. Reports downloaded and reviewed yearly (a tracker task, [11](11-tasks.md)). The privacy notice lists the same vendors ([01](01-system-design.md#data-model)).
 - Self-hosted tools (Jenkins, SonarQube, Grafana stack, Airflow) are our controls, not vendors.
 
 Status checked 2026-10; re-check before relying on it. Clouds: [09](09-cloud.md#buy-list).

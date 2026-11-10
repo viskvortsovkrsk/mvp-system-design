@@ -1,7 +1,7 @@
 # 03 · Folders
 
 ```
-.claude/CLAUDE.md        agent rules + project invariants
+CLAUDE.md                agent rules + project invariants; AGENTS.md for other agents
 .claude/settings.json    permissions.deny: what agents must not read
 .mcp.json                Grafana and SonarQube MCP, read-only
 .gitignore               .env, reports/, local binaries
@@ -31,7 +31,7 @@ deploy/
   terraform/             modules/, shared/, stage/, prod/
 scripts/                 dev and ops helpers (reset-db.sh, test.sh, tunnel.sh, load/)
 sql/                     one-off ops queries, never app code
-docs/                    00-mvp-system-design.md, NN-topic.md, env/{dev,stage,prod}.md, releases/<ver>.md, incidents/YYYY-MM-DD-slug.md
+docs/                    00-mvp-system-design.md, OWN-N-topic.md, env/{dev,stage,prod}.md, releases/<ver>.md, incidents/YYYY-MM-DD-slug.md
 ```
 
 ## Rules
@@ -43,7 +43,7 @@ docs/                    00-mvp-system-design.md, NN-topic.md, env/{dev,stage,pr
 - Agents can't read secrets: `.claude/settings.json` has `{"permissions": {"deny": ["Read(~/.config/<project>/**)"]}}`.
 - Migrations: `internal/store/migrations/NNNNNN_verb_noun.sql`. Never renumber after merge; CI rejects duplicate numbers.
 - `deploy/observability/` is mounted by dev compose and prod stack alike. One copy.
-- Docs: one topic per file, numbered, each decision with its reason and what it supersedes. Change them in the same PR as the code.
+- Docs: one topic per file, with the project's own numbers: `OWN-1-<topic>.md`, `OWN-2-<topic>.md`, … A bare number, as in "logs → 04" ([agent rules](../agent-rules.md#1-follow-mvp-system-design)), always means this model's doc; `00` is the deviations file. Each decision with its reason and what it supersedes. Change them in the same PR as the code.
 - `CLAUDE.md` (or `AGENTS.md`): [agent rules](../agent-rules.md), plus: tasks per [11](11-tasks.md#sync); SonarQube per [13](13-code-quality.md#agents); project invariants (ports, paths, "never X"). Facts that drift go to `docs/`, not here.
 
 ## Environment files
