@@ -3,7 +3,7 @@
 | Tier | Command | Runs | Providers | Coverage ≥ 99% of |
 |---|---|---|---|---|
 | Unit | `scripts/test.sh unit` | CI | none | packages without `integration` or `live` tests |
-| Integration, fakes | `scripts/test.sh integration` | CI | fakes · Postgres, Redis, MinIO in throwaway containers | packages without `live` tests |
+| Integration, fakes | `scripts/test.sh integration` | CI | fakes · Postgres, Redis, SeaweedFS (S3) in throwaway containers | packages without `live` tests |
 | Integration, real | `scripts/test.sh live` | stage, after deploy | real: sandboxes ([06](06-stage.md)) | packages with `live` tests: real provider clients |
 | UI + e2e | `scripts/test.sh e2e` | CI on the built images · stage | fakes in CI, real on stage | — |
 | Stress / load | `scripts/load/*` | running stack | fakes | — |
