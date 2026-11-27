@@ -5,6 +5,7 @@
 - Every action a user can take other than reading has limits: each unsafe-method route, each job a user starts, each email, upload or LLM call a user causes.
 - Reads: per IP at the edge only.
 - Unauthenticated writes (login, signup, forms): per IP at the edge (WAF rate rules), plus the app limits once a user is known. The edge zone might be shared with another site ([07](07-prod.md#topology--start-here)); if it is, the app's `ip` scope replaces the edge rule.
+- Public forms that reach a person also get a captcha and a honeypot ([15](15-security.md#public-forms)).
 - Exempt, each listed with its reason: signed webhooks ([01](01-system-design.md#inbound-webhooks)), `/internal/*`, logout.
 
 ## Limits
