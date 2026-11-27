@@ -77,6 +77,7 @@ protected-mode yes
 - One replica, pinned by the `redis=true` label (cloud-init, one node), AOF on that node's data disk. `stop-first` ([Swarm service](#swarm-service)).
 - `maxmemory` ≈ 75% of the container limit. `noeviction`: a full Redis rejects writes and alerts ([10](10-alerts.md#rules)), never drops counters silently.
 - ACL file as a Swarm secret: `default` off; `app` gets `~rl:* ~cache:*` and `+@read +@write +@scripting -@dangerous`; `healthcheck` is `nopass` with `+ping` only.
+- `app` may not `PING`: a client's ping gets `NOPERM` and reports a healthy Redis as down. A service's `/readyz` and dependency probe ([04](04-logs.md#every-service-emits)) read a key in its own key space (`GET rl:ping`; no such key is healthy), which also proves the grant the limiter needs.
 - Own overlay network `redis`; only services that use it join. No published port.
 - Node lost → relabel another node, redeploy: Redis starts empty, counters and cache reset. Accepted.
 - Not backed up. Restart, deploy, node loss: the app keeps working ([16](16-rate-limits.md#counters)).

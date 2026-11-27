@@ -6,6 +6,7 @@
 | HTTP | `net/http` with method+path patterns | chi, gin, echo, any framework |
 | UI | `html/template` + `go:embed`, plain JS, CSP | SPA, React, npm build (npm only for Playwright and `npx skills`) |
 | UI motion | CSS transitions, View Transitions, scroll-driven animations, `element.animate()`, springs: `linear()` tokens, a rAF spring for gestures ([14](14-ui.md)) | animation libraries |
+| UI beyond the DOM | canvas, WebGL, 3D: one library, its own build vendored in `static/vendor/<lib>/` beside its licence, pinned by checksum with a test that compares ([15](15-security.md#supply-chain)), loaded as ES modules, no build step · which library is the user's call | a CDN (the CSP refuses it) · an npm build |
 | UI design | look: a Claude Design canvas per project, then the project's own tokens ([14](14-ui.md#look)) · flows, copy: skill `bob` (`bias-advisor/` in [keepsimpleio/UXCoreOSS](https://github.com/keepsimpleio/UXCoreOSS), archived 2026-05-16) · `npx skills add keepsimpleio/UXCoreOSS --skill bob` | `uxcore-style` (UXCore's own brand) · a UI kit or another product's design system |
 | DB | Postgres 18, managed in stage/prod · `pgx`, hand-written SQL | ORM, generic repository layer, DB inside Swarm |
 | Migrations | numbered `.sql`, forward-only, embedded, run by `cmd/migrate` ([01](01-system-design.md#postgres-roles)) | down migrations, unpinned migrate image |
@@ -16,7 +17,7 @@
 | Auth | managed IdP (Auth0, platform IdP, regional OIDC) + own signed cookie | own IdP, Keycloak |
 | Payments | merchant of record or local provider, plus `fake` | handling cards |
 | Email | Resend | own SMTP |
-| LLM | official SDK, model chosen per task, cost ceiling ([01](01-system-design.md)) | uncapped calls |
+| LLM | official SDK · none for Go: a plain `net/http` client in a package of its own, same `fake` and ceiling ([12](12-tests.md)) · model chosen per task, cost ceiling ([01](01-system-design.md)) | uncapped calls · community SDKs |
 | Config | env vars, `.env.example`, secrets via `*_FILE` | viper, tracked `.env` |
 | Logs | `log/slog` JSON → Alloy → Loki | zap, logrus, `log.Printf` |
 | Metrics | Alloy (cAdvisor, node) → Prometheus → Grafana | provider monitoring as primary |
