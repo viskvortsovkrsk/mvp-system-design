@@ -46,7 +46,8 @@ slog.SetDefault(slog.New(h).With("service", service, "version", version, "enviro
 | `request_id` | request or job | UUIDv7 |
 | `source` `action` | HTTP | web · game_start (closed enum) |
 | `tenant_id` `user_id` | request; null before auth | opaque ids |
-| `client_ip` | edge requests; from the trusted proxy header | 203.0.113.7 |
+| `client_ip` | edge requests; the entry the trusted proxy appended (rightmost in `X-Forwarded-For`), never the client-sent leftmost | 203.0.113.7 |
+| `host` `user_agent` | edge requests | app.example.com · curl/8.7.1 |
 | `method` `route` `status` `duration_ms` | request completed | POST · /games/{id} · 502 · 1830 |
 | `error` `error_kind` | WARN/ERROR; `error` redacted, ≤512 chars | … · timeout |
 | `stack` | panics only | |

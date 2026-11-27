@@ -23,7 +23,7 @@
 | Alerts | Grafana alerting → messenger bot: Slack (default, SOC 2) or Telegram (no SOC 2), [15](15-security.md#vendors) | email-only, alerts clicked in UI |
 | AI ops | Grafana MCP, Viewer token, `--disable-write` | Editor tokens for agents |
 | Runtime | Docker Swarm · compose of the same shape for dev | Kubernetes |
-| Edge | Cloudflare (DNS, WAF, TLS, Tunnel + Access) → Caddy | a second WAF/L7 behind Cloudflare |
+| Edge | Cloudflare (DNS, WAF, TLS, Tunnel + Access, Turnstile) → Caddy | a second WAF/L7 behind Cloudflare |
 | Images | ours: multi-stage, `distroless/static:nonroot` · every image, every env: pinned `tag@digest` | `latest`, root |
 | IaC | Terraform, remote locked state | console changes |
 | Git | Git, mandatory · GitHub (default) or Bitbucket · flow per [08](08-release.md#git) | no version control, commits to `main` |

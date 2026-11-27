@@ -55,8 +55,10 @@ header {
 }
 ```
 
+- Before `includeSubDomains`: every subdomain serves HTTPS, bucket website hosts included.
 - Providers widen only the directives they need, each origin with a `#` comment saying why: login provider → `form-action` (redirects after sign-out are checked too); payment overlay → `script-src`, `frame-src`, `connect-src`; analytics tag ([02](02-stack.md)) → `script-src`, `img-src`, `connect-src`.
 - No inline `<script>`, `<style>`, `style=` or `on*=` in templates; CSP blocks them. JS and CSS are files in `static/`.
+- An upstream 4xx caused by the caller's input goes back as 4xx, never 502: 5xx means our failure ([04](04-logs.md#levels)), so a scanner never fires the 5xx alert.
 - Bodies capped with `http.MaxBytesReader` (1 MB default); uploads go straight to the bucket ([15](15-security.md#uploads)).
 - Rate limits: [16](16-rate-limits.md).
 

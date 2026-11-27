@@ -38,6 +38,7 @@ Rules not covered elsewhere. Already decided, kept where they are:
 - New `sid` on every sign-in and role change.
 - User identity = IdP subject. Accounts are linked by email only when the IdP marks it verified.
 - Same answer and timing for "no such account" and "wrong code" where the flow is ours.
+- A password check of our own (a deviation from the IdP): limits per account as well as per IP ([16](16-rate-limits.md)), growing delay after failures, the owner emailed after 10 in a row; the failure line carries `user_id` when the account exists.
 
 ## Audit log
 
@@ -73,6 +74,22 @@ Default: the browser uploads straight to the bucket by signed URL; the file neve
 - Object key = `uuidv7()`. The user's file name is a `pii` column, never a path.
 - Images re-encoded server-side: strips EXIF (GPS is PII) and polyglots.
 - Served by signed URL with `Content-Disposition: attachment`, except allowlisted image types. SVG and HTML never inline.
+
+## Public forms
+
+A form anyone can send that reaches a person (contact, sales lead, support):
+- Edge captcha ([02](02-stack.md)), invisible, its token checked server-side before anything is sent on. Captcha provider unreachable → the form passes, WARN.
+- Hidden honeypot field: filled → `200` as if sent, nothing sent, INFO.
+- Per-IP limit ([16](16-rate-limits.md#scope)).
+- Each submission logs `client_ip` and `user_agent` ([04](04-logs.md)), never the sender's email.
+
+## Third-party apps
+
+A self-hosted app with a public side (support chat, CMS, status page):
+- Public: only the routes end users need (widget, pages). Staff UI, its sign-in and its API behind the zero-trust tunnel + SSO ([07](07-prod.md#topology--start-here)).
+- Sign-in methods it ships but we don't use: off.
+- Staff accounts: personal, 2FA ([People and accounts](#people-and-accounts)).
+- Image pinned and bumped with the pins ([08](08-release.md#pins)).
 
 ## Outbound requests
 
@@ -141,6 +158,7 @@ Before the first prod user, then yearly:
 - Review the code and config against this doc and [01](01-system-design.md#web-security); findings → tasks with label `security` ([11](11-tasks.md)).
 - Smoke ([08](08-release.md#deploysh-env-version)) checks the security headers on every public host.
 - Weekly Jenkins run: pinned ZAP baseline scan against stage; new HIGH → priority 1.
+- A scan or pentest against prod: only from a source IP written in its task beforehand, so it can be told from an attack.
 - `/.well-known/security.txt` (RFC 9116) from Caddy: `Contact`, `Expires` ≤ 1 year (renewed with the pins), `Policy`. Public repos also get `SECURITY.md`.
 - External pentest when a customer contract asks or before handling payments outside a merchant of record.
 
